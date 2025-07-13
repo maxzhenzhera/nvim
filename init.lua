@@ -961,10 +961,74 @@ require('lazy').setup({
       incremental_selection = {
         enable = true,
         keymaps = {
-          init_selection = '<cr>',
-          node_incremental = 'grn',
-          scope_incremental = 'grc',
-          node_decremental = 'grm',
+          -- init_selection = '<cr>',
+          -- node_incremental = 'grn',
+          -- scope_incremental = 'grc',
+          -- node_decremental = 'grm',
+          init_selection = '<CR>',
+          node_incremental = '<CR>',
+          scope_incremental = '<S-CR>',
+          node_decremental = '<BS>',
+        },
+      },
+      textobjects = {
+        move = {
+          enable = true,
+          set_jumps = true, -- whether to set jumps in the jumplist
+          goto_next_start = {
+            [']f'] = '@function.outer',
+            [']]'] = '@class.outer',
+            [']b'] = '@block.outer',
+            [']a'] = '@parameter.inner',
+            [']k'] = '@call.outer',
+          },
+          goto_next_end = {
+            [']F'] = '@function.outer',
+            [']B'] = '@block.outer',
+            [']A'] = '@parameter.inner',
+            [']K'] = '@call.outer',
+          },
+          goto_previous_start = {
+            ['[f'] = '@function.outer',
+            ['[['] = '@class.outer',
+            ['[b'] = '@block.outer',
+            ['[a'] = '@parameter.inner',
+            ['[k'] = '@call.inner',
+          },
+          goto_previous_end = {
+            ['[F'] = '@function.outer',
+            ['[B'] = '@block.outer',
+            ['[A'] = '@parameter.inner',
+            ['[K'] = '@call.inner',
+          },
+        },
+        select = {
+          enable = true,
+          lookahead = true,
+          lookbehind = true,
+          -- include_surrounding_whitespace = true,
+          keymaps = {
+            ['af'] = '@function.outer',
+            ['if'] = '@function.inner',
+            ['aC'] = '@class.outer',
+            ['iC'] = '@class.inner',
+            ['ab'] = '@block.outer',
+            ['ib'] = '@block.inner',
+            ['aL'] = '@loop.outer', -- `al` is already in used by `a line`
+            ['iL'] = '@loop.inner', -- same as `al`
+            ['a/'] = '@comment.outer',
+            ['i/'] = '@comment.outer', -- no inner for comment
+            -- Handled by `mini.ai`
+            -- ['aa'] = '@parameter.outer', -- parameter -> argument
+            -- ['ia'] = '@parameter.inner',
+            ['ac'] = '@call.outer',
+            ['ic'] = '@call.inner',
+            ['ai'] = '@conditional.outer', -- i as if
+            ['ii'] = '@conditional.inner',
+            -- Custom captures
+            ['ie'] = '@binary_expression.inner',
+            ['aF'] = '@function.name',
+          },
         },
       },
     },
@@ -974,6 +1038,24 @@ require('lazy').setup({
     --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+  -- https://github.com/KoalaVim/KoalaVim/blob/0f7ad81b5e06510d5a080078b83e32de37d87b7c/lua/KoalaVim/plugins/treesitter.lua
+  {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    event = { 'BufReadPre', 'BufNewFile' },
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+    },
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-context',
+    event = { 'BufReadPre', 'BufNewFile' },
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+    },
+    config = function(_, opts)
+      require('treesitter-context').setup(opts)
+    end,
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
